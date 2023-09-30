@@ -11,3 +11,40 @@
 ৩ কে ৩ বার থাকার কথা ছিল কিন্তু ৫ বার আছে তাই ৫-৩ অর্থাৎ ২ টা ৩ কে বাদ দিবো
 সো ans ২
 এক্ষেত্রে আপনি ফ্রিকোয়েন্সি অ্যারে বা ডিকশনারি এর হেল্প নিতে পারেন.. """
+
+
+n = int(input())
+lst = list(map(int, input().split()))
+
+# print(lst)
+# print(type(lst))
+
+# dictionary nilam
+counter = {}
+
+
+for val in lst:
+    if val in counter:
+        counter[val] += 1 
+    else:
+        counter[val] = 1
+
+# for idx, x in counter.items():
+#     print(f'{idx} : {x}')
+
+to_remove = 0
+ans = 0
+for idx, x in counter.items():
+    # print(idx,x)
+
+    # occurence jodi value er soman hoy , taile kichui korbo na
+    if idx == x:
+        ans = ans + to_remove
+    # occurence kom hoile sei occurence ta baad dibo
+    if x < idx:
+        ans = ans + x
+    # karo occurence beshi hoile tar count theke value baad diye baki kaj
+    else:
+        ans = ans + (x-idx)
+
+print(ans)
