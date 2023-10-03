@@ -13,12 +13,15 @@ for i in range(n):
         pyautogui.write('#')
     # print()
     pyautogui.press('enter')
+
+"""
+
 #
 ##
 ###
 ####
 #####
-
+"""
 
 
 
