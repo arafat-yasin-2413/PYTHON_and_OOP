@@ -1,3 +1,5 @@
+'''
+
 def call():
     print("Calling someone I don't know")
     return 'Call Done'
@@ -35,25 +37,39 @@ msg = my_phone.sendSMS(33454,"How are you?")
 
 print(msg)
 
-
 '''
-The code is showing 'None' in the output because the print(my_phone.call()) line is trying to print the return value of the call method, but the call method does not have an explicit return statement, so it implicitly returns None by default.
 
-In Python, if a function or method doesn't have a return statement or if it reaches the end of the function without encountering a return statement, it returns None by default.
 
-In your code, the call method is defined as follows:
 
-python
-Copy code
-def call(self):
-    print('Calling one person')
-It prints the message 'Calling one person' but doesn't explicitly return any value. Therefore, when you call my_phone.call(), it prints the message and returns None, which is why you see 'None' in the output when you print the result of my_phone.call().
+class Phone:
+    price = 34000
+    brand = 'Samsung'
+    color = 'Blue'
 
-To avoid seeing 'None' in the output, you can simply call the call method without printing its return value like this:
+    def call(self):
+        print(f'Calling someone I don\'t know')
 
-python
-Copy code
+    def send_sms(self,num,txt):
+        print(f'Sending "{txt}" to {num}')
+
+
+
+
+my_phone = Phone()
+print(my_phone.brand)
+print(my_phone.price)
+print(my_phone.color)
+
 my_phone.call()
-This will print 'Calling one person' without displaying 'None' in the output.
+my_phone.send_sms(8883455,"I Miss you")
 
-'''
+
+
+
+
+
+
+
+
+
+

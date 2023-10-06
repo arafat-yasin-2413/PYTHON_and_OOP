@@ -1,4 +1,4 @@
-class Shop:
+'''class Shop:
     shopping_mall = 'JFP'
 
     def __init__(self,buyer):
@@ -19,3 +19,41 @@ rakib = Shop('Rakib')
 rakib.add_to_cart('Cap')
 rakib.add_to_cart('Watch')
 print(rakib.cart)
+'''
+
+
+class Shopping:
+
+    def __init__(self):
+        self.cart = []
+
+
+    def add_to_cart(self,item):
+        self.cart.append(item)
+
+
+
+alomgir = Shopping()
+alomgir.add_to_cart('Cap')
+alomgir.add_to_cart('Phone')
+alomgir.add_to_cart('Shoes')
+print(alomgir.cart)
+
+
+shabana = Shopping()
+shabana.add_to_cart('Bag')
+shabana.add_to_cart('Saree')
+shabana.add_to_cart('Ornaments')
+print(shabana.cart)
+
+
+
+
+
+
+
+
+
+
+
+
