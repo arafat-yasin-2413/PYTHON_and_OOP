@@ -1,0 +1,19 @@
+We define a BankAccount class with three methods:
+
+__init__: This is the constructor that initializes the account with an optional initial balance. By default, it's set to 0.
+
+
+deposit: This method allows you to deposit money into the account. It checks if the amount is positive before updating the balance.
+
+
+withdraw: This method allows you to withdraw money from the account, but it checks if the withdrawal amount is valid (positive and within the account balance).
+
+
+check_balance: This method displays the current account balance.
+We create a my_account object by calling BankAccount(100), which initializes the account with an initial balance of $100.
+
+We perform some operations on the account:
+
+Deposit $50 using my_account.deposit(50).
+Withdraw $30 using my_account.withdraw(30).
+Check the account balance using my_account.check_balance().

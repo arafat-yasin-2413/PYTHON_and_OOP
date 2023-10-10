@@ -1,0 +1,55 @@
+
+               Class , Object , Constructor:
+---------------------------------------------------------
+    class My_class:
+        pass
+
+    my_object = My_class()
+
+Object বানানোর সাথে সাথেই সে একটা কন্সট্রাক্টর কল করে।
+Constructor এর কাজ হলো নতুন কোনো অবজেক্ট তৈরি করা মাত্রই সেই
+অব্জেক্টের variables বা attributes গুলোতে ভ্যালু দিয়ে initialize
+করে ফেলা।
+
+self এর ব্যবহার:
+-------------
+    ক্লাসের মধ্যে কোনো ফাংশন create করলে সেই ফাংশনে কোনো প্যারামিটার না
+দিলেও সে অবজেক্ট কে তার মধ্যে প্রথম প্যারামিটার হিসেবে নিয়ে নেয়। এজন্য প্রথম প্যারামিটার
+বোঝানোর জন্য self লিখা হয়। এই self মূলত ওই অবজেক্ট টা। এখন self এর পর
+ডট (.) লিখে অন্যান্য প্যারামিটারে ভ্যালু আসাইন করা, মডিফাই করা এবং অ্যাক্সেস
+করা যায়।
+
+
+Constructor কল করার জন্য double underscore দিয়ে init
+ফাংশন টাকে কল করা হয়।
+
+
+
+
+             Class Attr. vs. Instance Attributes
+-----------------------------------------------------------
+
+CLASS ATTRIBUTES
+Class Attributes গুলো একটা ক্লাসের সকল অব্জেক্টের মধ্যে SHARED ভাবে
+থাকে।
+পুরো ক্লাসের ভিতর থেকে তাকে অ্যাক্সেস করা যায়।
+
+
+একশ কথার এক কথাঃ
+Use Case: Class attributes are useful when you want to
+ store data or properties that are common to all
+ instances of the class.
+
+
+INSTANCE ATTRIBUTES
+Specific to Each Instance:
+-----<<<<<---------->>>>>>
+Instance attributes are variables that are specific to
+each instance of a class. They belong to individual
+objects and can have different values for each object.
+
+একশ কথার এক কথাঃ
+Use Case: Instance attributes are useful when you need
+to store data that varies from one object to another,
+such as the name, age, or any other specific
+characteristic of an object.
