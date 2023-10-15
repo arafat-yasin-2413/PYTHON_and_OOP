@@ -14,6 +14,7 @@ buy a product, then throw a Congress message.
 '''
 
 
+''' 
 class Product:
     def __init__(self, p_id, name, price, quantity):
         self.product_id = p_id
@@ -64,3 +65,95 @@ for thing in moshiur.products:
     print(f"{thing.name}, {thing.quantity}")
 
 
+
+
+'''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class Product:
+    def __init__(self,item,price,quantity):
+        self.item = item
+        self.price = price
+        self.quantity = quantity
+
+
+
+class Shop:
+    def __init__(self,name):
+        self.name = name
+    shop_cart = []
+    def add_products(self,product):
+        Shop.shop_cart.append(product)
+
+    def buy_product(self,name,quantity):
+        is_available = False
+        has_bought = False
+        for things in Shop.shop_cart:
+            if name == things.item and quantity <= things.quantity:
+                is_available = True
+                if quantity <=things.quantity:
+                    things.quantity -= quantity
+                    has_bought = True
+                    print(f"Congrats. You have bought {quantity} unit {name}")
+        if is_available is not True or has_bought is not True:
+            print(f"{name} is not available")
+
+
+
+
+
+
+
+
+
+
+
+product1 = Product("Laptop",340000,15)
+product2 = Product("Mobile",45000,20)
+product3 = Product("Camera",60000,12)
+
+
+my_shop = Shop("Goriber Gadget")
+my_shop.add_products(product1)
+my_shop.add_products(product2)
+my_shop.add_products(product3)
+
+
+my_shop.buy_product("Laptop",15)
+my_shop.buy_product("Mobile",20)
+my_shop.buy_product("Camera",12)
+my_shop.buy_product("Mobile",2)
+
+
+print()
+
+for things in Shop.shop_cart:
+    print(f"{things.item}, {things.price}, {things.quantity} unit")
