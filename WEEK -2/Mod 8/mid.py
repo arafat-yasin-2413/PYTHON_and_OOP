@@ -10,21 +10,23 @@ class Hall(Star_Cinema):
         super().__init__()
         self.seats = {}
         self.show_list = []
-        self.rows = rows
-        self.cols = cols
+        self.__rows = rows
+        self.__cols = cols
         self.hall_no = hall_no
         self.entry_hall(self)
+        # Star_Cinema.entry_hall(self)
 
     def entry_show(self,id,movie_name,time):
         my_tuple = (id,movie_name,time)
         # print(type(my_tuple[0]))
         self.show_list.append(my_tuple)
-        my_list = [ [0,0,0,0,0],
-                  [0,0,0,0,0],
-                  [0,0,0,0,0],
-                  [0,0,0,0,0],
-                  [0,0,0,0,0]
-                ]
+        # my_list = [ [0,0,0,0,0],
+        #           [0,0,0,0,0],
+        #           [0,0,0,0,0],
+        #           [0,0,0,0,0],
+        #           [0,0,0,0,0]
+        #         ]
+        my_list = [[0] * self.__cols for _ in range(self.__rows)]
         self.seats[id] = my_list
 
         # print(self.seats.keys())
@@ -71,7 +73,7 @@ class Hall(Star_Cinema):
 
 
 
-cinema_hall = Hall(5,5,1)
+cinema_hall = Hall(12,12,1)
 cinema_hall.entry_show('122',f'Intersteller','11 am')
 cinema_hall.entry_show('123','13 Hours','2 pm')
 cinema_hall.entry_show('124','Perfume','5 pm')
