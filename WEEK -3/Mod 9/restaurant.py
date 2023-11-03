@@ -1,180 +1,332 @@
-class Restaurant:
-    def __init__(self,name,location):
+class User:
+    def __init__(self, name, email, address):
         self.name = name
-        self.location = location
-        self.rice_items = {}
-        self.fish_items = {}
-        self.meat_items = {}
-        self.all_foods = {}
-
-    def add_rice_items_to_inventory(self,obj):
-        self.rice_items[obj.name] = obj
-        self.all_foods[obj.name] = obj
-
-    def add_fish_items_to_inventory(self,obj):
-        self.fish_items[obj.name] = obj
-        self.all_foods[obj.name] = obj
-
-    def add_meat_item_to_inventory(self,obj):
-        self.meat_items[obj.name] = obj
-        self.all_foods[obj.name] = obj
+        self.email = email
+        self.address = address
 
 
-    def show_rice_items(self):
-        for key,value in self.rice_items.items():
-            print(value)
-
-    def show_fish_items(self):
-        for key,value in self.fish_items.items():
-            print(value)
-
-    def show_meat_items(self):
-        for key,value in self.meat_items.items():
-            print(value)
-
-    def show_all_foods(self):
-        for key,value in self.all_foods.items():
-            print(value)
-
-class Food:
-    def __init__(self, name,id, quantity, price):
+class Employee:
+    def __init__(self, name, joining_date, salary_per_day, employee_type):
         self.name = name
-        self.id = id
-        self.quantity = quantity
+        self.joining_date = joining_date
+        self.salary_per_day = salary_per_day
+        self.employee_type = employee_type
+
+    def __repr__(self):
+        return f"{self.employee_type.lower()} : name : {self.name}, joined on : {self.joining_date} "
+
+
+class Manager(Employee):
+    def __init__(self, name, joining_date, salary_per_day, employee_type):
+        super().__init__(name, joining_date, salary_per_day, employee_type)
+        self.joining_date = joining_date
+        self.salary_per_day = salary_per_day
+        self.employee_type = employee_type
+        self.due_salary = salary_per_day
+        self.wallet = 0
+
+
+
+    def pay_salary(self, employee_type):
+        pass
+
+    def __repr__(self):
+        return Employee.__repr__(self)
+
+
+class Chef(Employee):
+    def __init__(self, name, joining_date, salary_per_day, employee_type):
+        super().__init__(name, joining_date, salary_per_day, employee_type)
+        self.salary_per_day = salary_per_day
+        self.employee_type = employee_type
+        self.due_salary = salary_per_day
+        self.wallet = 0
+
+
+    def __repr__(self):
+        return Employee.__repr__(self)
+
+
+class Server(Employee):
+    def __init__(self, name, joining_date, salary_per_day, employee_type):
+        super().__init__(name, joining_date, salary_per_day, employee_type)
+        self.salary_per_day = salary_per_day
+        self.employee_type = employee_type
+        self.due_salary = salary_per_day
+        self.wallet = 0
+
+    def __repr__(self):
+        return Employee.__repr__(self)
+
+
+class Food_Items:
+    def __init__(self, name, price):
+        self.name = name
         self.price = price
 
+    def __repr__(self):
+        return f"{self.name}  -->  {self.price} tk"
 
-class Rice(Food):
-    def __init__(self, name,id, quantity, price):
-        self.rice_items = {}
-        super().__init__(name,id, quantity, price)
 
+class Burger(Food_Items):
+    def __init__(self, name, price, ingredients):
+        super().__init__(name, price)
+        self.ingredients = ingredients
 
     def __repr__(self):
-        return f"Rice Item id: {self.id} - {self.name} - {self.quantity} -- Price: {self.price} tk"
-
-class Fish(Food):
-    def __init__(self, name,id, quantity, price):
-        super().__init__(name,id, quantity, price)
-
-    def __repr__(self):
-        return f"Fish Item id: {self.id} - {self.name} - {self.quantity} -- Price: {self.price} tk"
+        return Food_Items.__repr__(self)
 
 
-class Meat(Food):
-    def __init__(self, name,id, quantity, price):
-        super().__init__(name,id, quantity, price)
+class Pizza(Food_Items):
+    def __init__(self, name, price, size, ingredients):
+        super().__init__(name, price)
+        self.size = size
+        self.ingredients = ingredients
 
     def __repr__(self):
-        return f"Meat Item id: {self.id} , {self.name} - {self.quantity} -- Price: {self.price} tk"
+        if self.size == 'regular':
+            return f"{self.name} (R) --> {self.price} tk"
+        elif self.size == 'medium':
+            return f"{self.name} (M) --> {self.price} tk"
+        elif self.size == 'large':
+            return f"{self.name} (L) --> {self.price} tk"
+
+class Restaurant:
+    def __init__(self, restr_name):
+        self.restr_name = restr_name
+
+        self.rent = 3000
+
+        self.burgers = []
+        self.pizzas = []
+        self.all_foods = []
+
+        self.manager = []
+        self.chefs = []
+        self.servers = []
+
+        self.payable = 0
+
+        self.revenue = 0
+        self.balance = 0
+        self.expense = 0
+        self.profit = 0
+
+    def add_foods_to_restaurant(self,food_type,food):
+        if food_type.lower() == 'burger':
+            self.burgers.append(food)
+
+        elif food_type.lower() == 'pizza':
+            self.pizzas.append(food)
+        self.all_foods.append(food)
+
+    def add_employees(self, employee_type, employee):
+        if employee_type.lower() == 'manager':
+            self.manager.append(employee)
+        elif employee_type.lower() == 'chef':
+            self.chefs.append(employee)
+        elif employee_type.lower() == 'server':
+            self.servers.append(employee)
+
+    def show_employees(self):
+        print(self.manager)
+        print(self.chefs)
+        print(self.servers)
+
+    def show_all_food_items(self):
+        print('---------------- Our Tasty Items ----------------')
+        for food in self.all_foods:
+            print(food)
+
+    def total_payable_for_customer(self,payable):
+        self.payable = payable
+        print(f'Please Pay : {payable} tk')
+
+    def collect_bill_from_customer(self,amount):
+        if amount > self.payable:
+            self.revenue += self.payable
+            self.balance += self.payable
+            print(f'Here is your change {amount-self.payable} tk')
+
+        elif amount < self.payable:
+            print(f'Please provide {self.payable - amount} tk more')
 
 
-class Customer:
-    def __init__(self,name):
-        self.name = name
-        # bismillah.show_meat_items()
-        self.price_list = []
-        self.total_price = 0
-
-    def show_foods(self,obj):
-        obj.show_all_foods()
-
-    def order_food(self,id,quantity):
-        total = 0
-        for key,value in bismillah.all_foods.items():
-            if id == value.id:
-                value.quantity -= quantity
-                unit_price = value.price
-                total += quantity * value.price
-                self.price_list.append(total)
-        print(f"{id}    {unit_price} *{quantity} unit = {total} taka")
-
-
-    def show_total_bill(self):
-        total = 0
-        for items in self.price_list:
-            total += items
+    def pay_rent(self):
         print()
-        self.total_price = total
-        print(f"You Have To Pay : {total} taka")
-
-    def checkout(self,amount):
-        if amount < self.total_price:
-            print(f"Please provide {self.total_price - amount} taka more")
-        else :
-            if amount == self.total_price:
-                print(f'You have paid {amount} taka. Thank You.')
-            elif amount > self.total_price :
-                print(f'You have paid {amount} taka.')
-                print(f'Here is your change {amount - self.total_price} tk. Thank You.')
-
-'''
-can see food lists
-can order foods
-
-'''
+        print(f"Rent {self.rent} tk Paid Successfully")
+        self.balance -= self.rent
+        self.expense += self.rent
 
 
+    def pay_salary(self,employee_type,employee):
+        if employee_type.lower() == 'manager':
+            if self.balance < employee.salary_per_day:
+                print(f'No Salary Today {employee_type}. Ask Tomorrow with day counts.')
+            elif self.balance > employee.salary_per_day:
+                employee.wallet += employee.salary_per_day
+                employee.due_salary -= employee.salary_per_day
+                self.balance -= employee.salary_per_day
+                self.expense += employee.salary_per_day
 
-# main starts from here
+        elif employee_type.lower() == 'chef':
+            if self.balance < employee.salary_per_day:
+                print(f'No Salary Today {employee_type}. Ask Tomorrow with day counts.')
+            elif self.balance > employee.salary_per_day:
+                employee.wallet += employee.salary_per_day
+                employee.due_salary -= employee.salary_per_day
+                self.balance -= employee.salary_per_day
+                self.expense += employee.salary_per_day
 
-bismillah = Restaurant('Bismillah Restaurant','Ulail bazar,Savar')
+        elif employee_type.lower() == 'server':
+            if self.balance < employee.salary_per_day:
+                print(f'No Salary Today {employee_type}. Ask Tomorrow with day counts.')
+            elif self.balance > employee.salary_per_day:
+                employee.wallet += employee.salary_per_day
+                employee.due_salary -= employee.salary_per_day
+                self.balance -= employee.salary_per_day
+                self.expense += employee.salary_per_day
 
-# creating rice items
-plain_rice = Rice('Plain Rice',111, 50, 20)
-polau = Rice('Polau Premium', 112,40, 80)
-khichuri = Rice('Khichuri', 113,30, 70)
-
-# creating fish items
-ilish1 = Fish('Ilish fry', 211, 40,60)
-ilish2 = Fish('Mustard Ilish', 212, 60,120)
-ilish3 = Fish('Ilish Curry', 213, 50,100)
-rui1 = Fish('Rui vuna', 214, 70,120)
-rui2 = Fish('Rui macher kalia', 215, 60,140)
-rui3 = Fish('Rui curry', 216, 60,80)
-pabda = Fish('Pabda Curry', 217, 50,90)
-pangash = Fish('Pangash Vuna', 218, 40,80)
-
-# creating meat items
-deshi_murgi = Meat('Deshi Murgi Kosha', 311, 40,150)
-beef = Meat('Beef Curry', 312,60,180)
-mutton = Meat('Mutton Rejala', 313, 30,200)
+    def calculate_restaurant_profit(self):
+        self.profit = self.revenue - self.expense
 
 
+    def show_revenue(self):
+        print()
+        print('$$$$$$$$$$ REVENUE $$$$$$$$$$')
+        print(f"Total Revenue : {self.revenue} tk")
+
+    def show_balance(self):
+        print()
+        print('$$$$$$$$$$ BALANCE $$$$$$$$$$')
+        print(f"Current Balance : {self.balance} tk")
+
+    def show_expense(self):
+        print()
+        print('$$$$$$$$$$ EXPENSE $$$$$$$$$$')
+        print(f"Total Expense : {self.expense} tk")
+
+    def show_profit(self):
+        print()
+        print('$$$$$$$$$$ PROFIT $$$$$$$$$$')
+        print(f"Total Profit : {self.profit} tk")
 
 
-bismillah.add_rice_items_to_inventory(plain_rice)
-bismillah.add_rice_items_to_inventory(polau)
-bismillah.add_rice_items_to_inventory(khichuri)
-bismillah.add_fish_items_to_inventory(ilish1)
-bismillah.add_fish_items_to_inventory(ilish2)
-bismillah.add_fish_items_to_inventory(ilish3)
-bismillah.add_fish_items_to_inventory(rui1)
-bismillah.add_fish_items_to_inventory(rui2)
-bismillah.add_fish_items_to_inventory(rui3)
-bismillah.add_fish_items_to_inventory(pabda)
-bismillah.add_fish_items_to_inventory(pangash)
-bismillah.add_meat_item_to_inventory(deshi_murgi)
-bismillah.add_meat_item_to_inventory(beef)
-bismillah.add_meat_item_to_inventory(mutton)
+class Customer(User):
+    def __init__(self, name, email, address):
+        super().__init__(name, email, address)
+        self.ordered_items = []
 
-# bismillah.show_rice_items()
-# print()
-# bismillah.show_fish_items()
-# print()
-# bismillah.show_meat_items()
+    def __repr__(self):
+        return f"Customer with name {self.name} , and email : {self.email}"
 
+    def add_to_order(self,item):
+        self.ordered_items.append(item)
+
+    def calculate_bill(self):
+        total = 0
+        for item in self.ordered_items:
+            total += item.price
+        print()
+        print(f'\t\tHello *{self.name}* Sir/Madam ! ')
+        print(f"Your total bill is : {total}")
+        bismillah.total_payable_for_customer(total)
+
+
+
+
+    def pay_bill(self,amount):
+        bismillah.collect_bill_from_customer(amount)
+
+
+
+
+
+
+
+
+
+
+bismillah = Restaurant('Bismillah Restaurant')
+manager1 = Manager('Moin Akhter', '10 Sept 2022', 3500, 'Manager')
+# print(manager1)
+
+chef1 = Chef('Rafsan Hoque', '14 Mar 2021', 2000, 'chef')
+# print(chef1)
+chef2 = Chef('Sonny Side', '14 May 2021', 2000, 'chef')
+
+server1 = Server('Sabbir', '18 Jan 2023', 400, 'server')
+# print(server1)
+
+
+bismillah.add_employees('manager', manager1)
+bismillah.add_employees('chef', chef1)
+bismillah.add_employees('chef', chef2)
+bismillah.add_employees('server', server1)
+# bismillah.show_employees()
+
+burger_1 = Burger('Chicken Burger', 240, ['chicken', 'lettuce', 'sauce'])
+burger_2 = Burger('Beef Burger', 390, ['beef', 'onions', 'pickles', 'mayo'])
+burger_3 = Burger('Premium Burger', 760, ['3 patty', 'naga morich', 'chille sauce'])
+pizza_1 = Pizza('Chicken Pizza', 360, 'regular', ['Chicken', 'garlic sauce'])
+pizza_2 = Pizza('Kima Pizza', 890, 'medium', ['beef kima', '3 sauce item', 'drink'])
+pizza_3 = Pizza('Tandoori Pizza', 1520, 'large', ['Tanduri beef', 'cheese'])
+
+
+bismillah.add_foods_to_restaurant('burger',burger_1)
+bismillah.add_foods_to_restaurant('burger',burger_2)
+bismillah.add_foods_to_restaurant('burger',burger_3)
+bismillah.add_foods_to_restaurant('pizza',pizza_1)
+bismillah.add_foods_to_restaurant('pizza',pizza_2)
+bismillah.add_foods_to_restaurant('pizza',pizza_3)
+
+bismillah.show_all_food_items()
 print()
-cust1 =Customer('Bulbul')
-cust1.show_foods(bismillah)
-print()
-cust1.order_food(113,2)
-cust1.order_food(212,3)
-cust1.order_food(312,2)
-cust1.show_total_bill()
-cust1.checkout(1000)
 
-print()
+cust_1 = Customer('Sakib Khan','sakib@gmail.com','Savar')
+cust_1.add_to_order(burger_3)
+cust_1.add_to_order(pizza_3)
+cust_1.add_to_order(pizza_3)
+cust_1.add_to_order(burger_1)
+cust_1.add_to_order(burger_2)
+cust_1.add_to_order(burger_3)
+cust_1.add_to_order(pizza_3)
+cust_1.add_to_order(pizza_3)
+cust_1.calculate_bill()
+cust_1.pay_bill(10000)
 
-cust2 = Customer('Robin')
-cust2.show_foods(bismillah)
+
+
+cust_2 = Customer('Nayeem Khan','nayeem@gmail.com','Gazipur')
+cust_2.add_to_order(pizza_2)
+cust_2.add_to_order(burger_2)
+cust_2.add_to_order(burger_1)
+cust_2.add_to_order(pizza_2)
+cust_2.add_to_order(burger_2)
+cust_2.add_to_order(burger_1)
+cust_2.add_to_order(pizza_3)
+cust_2.add_to_order(burger_3)
+cust_2.add_to_order(pizza_3)
+cust_2.add_to_order(pizza_3)
+cust_2.calculate_bill()
+cust_2.pay_bill(15000)
+
+
+
+bismillah.show_revenue()
+bismillah.pay_rent()
+bismillah.show_balance()
+
+
+bismillah.pay_salary('Manager',manager1)
+bismillah.pay_salary('Chef',chef1)
+bismillah.pay_salary('Chef',chef2)
+bismillah.pay_salary('server',server1)
+bismillah.calculate_restaurant_profit()
+
+bismillah.show_revenue()
+bismillah.show_expense()
+bismillah.show_profit()
+bismillah.show_balance()
+
+

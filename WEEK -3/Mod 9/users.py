@@ -137,15 +137,12 @@ class Vehicle(ABC):
     def start_drive(self):
         pass
 
-
 class Car(Vehicle):
     def __init__(self,vehicle_type,licence_plate,rate):
         super().__init__(vehicle_type,licence_plate,rate)
 
     def start_drive(self):
         self.status = 'unavailable'
-
-
 
 class Bike(Vehicle):
     def __init__(self,vehicle_type,licence_plate,rate):
