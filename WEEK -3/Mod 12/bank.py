@@ -43,6 +43,8 @@ class Account(ABC):
         self.address = address
         self.acc_type = acc_type
 
+        self.__history = []  # TODO: should not be public
+
         if acc_type.lower() == 'savings':
             self.digit = 1001 + len(Account.account_list)
             self.acc_number = 's' + str(self.digit)
@@ -59,11 +61,14 @@ class Account(ABC):
     def get_password(self):
         return self.__password
 
+    # ------------------- DONE ----------------- DONE ------------------- DONE ----------------- DONE -------------------
+
     @classmethod
     def create_account(self, name, email, password, address, acc_type):
         if acc_type.lower() == "savings":
             sv_user = Savings_Account(name, email, password, address)
             Account.account_list.append(sv_user)
+
 
         elif acc_type.lower() == "current":
             curr_user = Current_Account(name, email, password, address)
@@ -79,20 +84,31 @@ class Account(ABC):
 
     # general functionalities
     def deposit_amount(self, amount):
+        deposit_history = ""
         if amount > 0:
             self.__balance += amount
+            deposit_history = f"Deposited {amount} tk"
+            self.__history.append(deposit_history)
         print(f"{self.name} sir/madam , Deposit {amount} tk successfull")
 
-    def withdraw_amount(self):
-        pass
+    def withdraw_amount(self, amount):
+        withdraw_history = ""
+        if amount > self.__balance:
+            print("Withdrawal amount exceeded")
+        elif amount <= self.__balance:
+            self.__balance -= amount
+            withdraw_history = f"Withdraw {amount} tk"
+            self.__history.append(withdraw_history)
+            print(f"Withdraw {amount} tk Successfull")
 
     def check_available_balance(self):
         print(f"{self.name} ({self.acc_number}) current balance : {self.__balance} tk. ")
 
-    def transaction_history(self):
-        # string format a ekta list er vitore rakha jete pare
-        # just normal sentence with description
-        pass
+    def get_transaction_history(self):
+        for hist in self.__history:
+            print(hist)
+
+# ------------------- DONE ----------------- DONE ------------------- DONE ----------------- DONE -------------------
 
     def take_loan(self):
         pass
@@ -144,9 +160,9 @@ while (True):
 
     if ch == 1:
         # creating an account
-        acc_type = input('Enter account type (sv/curr)? : ')
+        acc_type = input('Enter account type (s/c)? : ')
 
-        if acc_type.lower() == 'sv':
+        if acc_type.lower() == 's':
             account_type = 'savings'
             name = input('Enter name : ')
             email = input('Enter email : ')
@@ -157,7 +173,7 @@ while (True):
             print(f"{name}'s ({account_type}) account created successfully ")
 
 
-        elif acc_type.lower() == 'curr':
+        elif acc_type.lower() == 'c':
             account_type = 'current'
             name = input('Enter name : ')
             email = input('Enter email : ')
@@ -203,15 +219,20 @@ while (True):
                 if opt == 1:
                     # Deposit money
                     print('Deposit in progress ...')
-                    amount = int(input('Enter amount : '))
-                    if amount < 0:
+                    d_amount = int(input('Enter amount : '))
+                    if d_amount < 0:
                         print('Amount should be > 0 ')
-                    elif amount > 0:
-                        current_user.deposit_amount(amount)
+                    elif d_amount > 0:
+                        current_user.deposit_amount(d_amount)
+                    # TODO: if user gives alphabets by mistake
+
 
                 elif opt == 2:
                     # Withdraw money
-                    pass
+                    print('Withdraw in progress ...')
+                    w_amount = int(input('Enter amount : '))
+                    current_user.withdraw_amount(w_amount)
+
 
                 elif opt == 3:
                     # Check available balance
@@ -221,7 +242,10 @@ while (True):
 
                 elif opt == 4:
                     # See Transaction history
-                    pass
+                    print(f'--------- History of {current_user.name} ({current_user.acc_number}) ---------')
+                    current_user.get_transaction_history()
+                    print(f"----------------------------------------------")
+
 
                 elif opt == 5:
                     # Take Loan
