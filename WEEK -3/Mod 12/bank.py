@@ -25,6 +25,10 @@ class Account(ABC):
         self.__loan_count = 0
         self.__loan_taken = 0  # in taka
 
+        self.sent_money = 0
+        self.received_money = 0
+
+
 
         if acc_type.lower() == 'savings':
             self.digit = 1001 + len(Account.account_list)
@@ -94,7 +98,7 @@ class Account(ABC):
 
 
 
-# ------------------- DONE ----------------- DONE ------------------- DONE ----------------- DONE -------------------
+# ------------------- DONE ----------------- DONE ------------------- DONE ----------------- DONE -----------------
 
     def take_loan(self, user , loan_amount):
         loan_history = ""
@@ -114,10 +118,29 @@ class Account(ABC):
     def get_loan_taken(self):
         return self.__loan_taken
 
+# ------------------- DONE ----------------- DONE ------------------- DONE ----------------- DONE -----------------
 
+    def transfer_money(self,sending_amount,sender):
+        # amount  asbe
+        # sender object asbe
+        # eikhane aisha jake tk pathabo acc_number input nibo
+        # jodi account exist na kore tahole direct error message dibo
+        # jodi account exist kore tahole,
+        # check korte hobe : i) sender er account a taka > 0 ache kina?
+        #                       jodi porjapto taka thake tahole transfer kore message show korbo
+        #                    ii) sender er porjapto taka na thakle error message show korbo
 
-    def transfer_money(self):
-        pass
+        if sender.__balance >= sending_amount:
+            # porjapto taka ache
+            receiver_acc_num = input('Enter Receiver Account No : ')
+            is_receiver_found = False
+            for user in Account.account_list:
+                if user.acc_number == receiver_acc_num:
+                    is_receiver_found = True
+                    print(f"receiver ({user.name}) pawa gese")
+
+            if not is_receiver_found:
+                print('Receiver match kore nai')
 
 
 class Savings_Account(Account):
@@ -259,7 +282,11 @@ while (True):
 
                 elif opt == 6:
                     # Transfer money
-                    pass
+                    print('Money Transfer in progress ...')
+                    print(f"Sender : {current_user.name} ({current_user.acc_number}) ")
+                    sending_money = int(input('Enter amount to send : '))
+                    current_user.transfer_money(sending_money,current_user)
+
 
                 elif opt == 7:
                     # Showing current loan amount
