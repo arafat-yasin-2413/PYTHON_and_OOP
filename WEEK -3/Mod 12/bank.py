@@ -1,28 +1,3 @@
-# class BankAccount:
-#     # Class variable to keep track of the last assigned account number
-#     last_account_number = 1000
-#
-#     def __init__(self, name, email, address, password):
-#         self.name = name
-#         self.email = email
-#         self.address = address
-#         self.password = password
-#         # Automatically generate account number
-#         self.account_number = BankAccount.generate_account_number()
-#
-#     @classmethod
-#     def generate_account_number(cls):
-#         # Increment the last account number and return the new one
-#         cls.last_account_number += 1
-#         return cls.last_account_number
-#
-# # Example usage
-# user1 = BankAccount("John Doe", "john@example.com", "123 Main St", "password123")
-# print(f"User 1 Account Number: {user1.account_number}")
-#
-# user2 = BankAccount("Jane Doe", "jane@example.com", "456 Oak St", "securepass")
-# print(f"User 2 Account Number: {user2.account_number}")
-
 
 '''
 
@@ -45,6 +20,12 @@ class Account(ABC):
 
         self.__history = []  # TODO: should not be public
 
+        self.__balance = 0
+
+        self.__loan_count = 0
+        self.__loan_taken = 0  # in taka
+
+
         if acc_type.lower() == 'savings':
             self.digit = 1001 + len(Account.account_list)
             self.acc_number = 's' + str(self.digit)
@@ -53,7 +34,10 @@ class Account(ABC):
             self.digit = 1001 + len(Account.account_list)
             self.acc_number = 'c' + str(self.digit)
 
-        self.__balance = 0
+
+
+
+
 
     def get_balance(self):
         return self.__balance
@@ -108,10 +92,29 @@ class Account(ABC):
         for hist in self.__history:
             print(hist)
 
+
+
 # ------------------- DONE ----------------- DONE ------------------- DONE ----------------- DONE -------------------
 
-    def take_loan(self):
-        pass
+    def take_loan(self, user , loan_amount):
+        loan_history = ""
+        if self.__loan_count <2:
+            print()
+            print(f"Loan Taken {loan_amount} tk from bank.")
+            loan_history = f"Loan taken {loan_amount} tk "
+            self.__history.append(loan_history)
+            self.__loan_taken += loan_amount
+            self.__loan_count += 1
+            print(f"{user.name} ({user.acc_number}) has total loan : {self.__loan_taken} tk")
+
+        elif self.__loan_count >= 2:
+            print(f"No More Loan. Repay First")
+            # TODO: Repaying the debt and taking loan again for another two times
+
+    def get_loan_taken(self):
+        return self.__loan_taken
+
+
 
     def transfer_money(self):
         pass
@@ -212,7 +215,8 @@ while (True):
                 print('4. See Transaction History ')
                 print('5. Take Loan ')
                 print('6. Transfer Money')
-                print('7. Log Out ')
+                print('7. Show Current Loan Amount ')
+                print('8. Log Out ')
                 print()
 
                 opt = int(input('Enter option : '))
@@ -249,13 +253,19 @@ while (True):
 
                 elif opt == 5:
                     # Take Loan
-                    pass
+                    print('Loan taking from bank ...')
+                    loan_amount = int(input('Enter loan amount : '))
+                    current_user.take_loan(current_user,loan_amount)
 
                 elif opt == 6:
                     # Transfer money
                     pass
 
                 elif opt == 7:
+                    # Showing current loan amount
+                    print(f"Current Loan : {current_user.get_loan_taken()} tk for {current_user.name}")
+
+                elif opt == 8:
                     # Logout
                     print(f"{current_user.name} ({current_user.acc_number}) Logged Out Successfully")
                     current_user = None
