@@ -210,14 +210,15 @@ class Bank(Account):
     def update_given_loan(self,amount):
         self.__given_loan += amount
 
-
-
+    
 
 
 class Admin(Bank, Account):
     admin_list = []
 
     def __init__(self, name, email, password, acc_type):
+        # super(Bank, self).__init__()
+        # super(Account, self).__init__()
 
 
         self.digit_part = None
@@ -270,7 +271,7 @@ class Admin(Bank, Account):
             print("\tUser Account not found")
 
     def check_balance(self):
-        print(f"Balance of the bank {self._Bank__available_balance}")
+        self.get_available_balance()
 
 
 
@@ -386,11 +387,11 @@ while (True):
 
                     elif admin_option == 4:
                         # Check Balance of the bank
-                        current_admin.check_balance()
+                        pass
 
                     elif admin_option == 5:
                         # Check Loan amount of the bank
-                        print(f"Bank's given Loan : {current_admin.get_given_loan()}")
+                        pass
 
                     elif admin_option == 6:
                         dutch_bangla.is_loan_active = False
