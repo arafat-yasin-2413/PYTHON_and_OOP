@@ -1,4 +1,3 @@
-
 '''
 
 
@@ -8,14 +7,22 @@
 from abc import ABC, abstractmethod
 
 
-class Account(ABC):
-    account_list = []
-
-    def __init__(self, name, email, password, address, acc_type):
+class User:
+    def __init__(self, name, email, password, address):
         self.name = name
         self.email = email
         self.__password = password
         self.address = address
+
+    def get_password(self):
+        return self.__password
+
+
+class Account(ABC, User):
+    account_list = []
+
+    def __init__(self, name, email, password, address, acc_type):
+        super().__init__(name, email, password, address)
         self.acc_type = acc_type
 
         self.__history = []  # TODO: should not be public
@@ -28,8 +35,6 @@ class Account(ABC):
         self.sent_money = 0
         self.received_money = 0
 
-
-
         if acc_type.lower() == 'savings':
             self.digit = 1001 + len(Account.account_list)
             self.acc_number = 's' + str(self.digit)
@@ -38,18 +43,8 @@ class Account(ABC):
             self.digit = 1001 + len(Account.account_list)
             self.acc_number = 'c' + str(self.digit)
 
-
-
-
-
-
     def get_balance(self):
         return self.__balance
-
-    def get_password(self):
-        return self.__password
-
-    # ------------------- DONE ----------------- DONE ------------------- DONE ----------------- DONE -------------------
 
     @classmethod
     def create_account(self, name, email, password, address, acc_type):
@@ -70,6 +65,7 @@ class Account(ABC):
         for user in Account.account_list:
             user.show_profile()
 
+    # ---------------------------------------------Functionalities--------------------------------------------
     # general functionalities
     def deposit_amount(self, amount):
         deposit_history = ""
@@ -96,17 +92,14 @@ class Account(ABC):
         for hist in self.__history:
             print(hist)
 
-
-
-# ------------------- DONE ----------------- DONE ------------------- DONE ----------------- DONE -----------------
-
-    def take_loan(self, user , loan_amount):
+    def take_loan(self, user, loan_amount):
         loan_history = ""
-        if self.__loan_count <2:
+        if self.__loan_count < 2:
             print()
             print(f"Loan Taken {loan_amount} tk from bank.")
             loan_history = f"Loan taken {loan_amount} tk "
             self.__history.append(loan_history)
+            self.__balance += loan_amount
             self.__loan_taken += loan_amount
             self.__loan_count += 1
             print(f"{user.name} ({user.acc_number}) has total loan : {self.__loan_taken} tk")
@@ -118,17 +111,9 @@ class Account(ABC):
     def get_loan_taken(self):
         return self.__loan_taken
 
-# ------------------- DONE ----------------- DONE ------------------- DONE ----------------- DONE -----------------
-
-    def transfer_money(self,sending_amount,sender):
-        # amount  asbe
-        # sender object asbe
-        # eikhane aisha jake tk pathabo acc_number input nibo
-        # jodi account exist na kore tahole direct error message dibo
-        # jodi account exist kore tahole,
-        # check korte hobe : i) sender er account a taka > 0 ache kina?
-        #                       jodi porjapto taka thake tahole transfer kore message show korbo
-        #                    ii) sender er porjapto taka na thakle error message show korbo
+    def transfer_money(self, sending_amount, sender):
+        sender_transferring_money = ""
+        receiver_receiving_money = ""
 
         if sender.__balance >= sending_amount:
             # porjapto taka ache
@@ -137,12 +122,23 @@ class Account(ABC):
             for user in Account.account_list:
                 if user.acc_number == receiver_acc_num:
                     is_receiver_found = True
-                    print(f"receiver ({user.name}) pawa gese")
+                    print(f"Receiver ({user.name}) has been found successfully")
+                    user.received_money += sending_amount
+                    sender.sent_money += sending_amount
+                    sender.__balance -= sending_amount
+                    sender_transferring_money = f"Transferred {sending_amount} tk to {user.name} "
+                    receiver_receiving_money = f"Received {sending_amount} tk from {sender.name} "
+                    sender.__history.append(sender_transferring_money)
+                    user.__history.append(receiver_receiving_money)
+                    print(f"Money Transfer Successfull, {sending_amount} tk to {user.name} ")
 
             if not is_receiver_found:
-                print('Receiver match kore nai')
+                print("Account does not exist")
+        else:
+            print(f"You have not sufficient money in your account")
 
 
+# ------------------- DONE ----------------- DONE ------------------- DONE ----------------- DONE -----------------
 class Savings_Account(Account):
     def __init__(self, name, email, password, address):
         super().__init__(name, email, password, address, "savings")
@@ -164,9 +160,44 @@ class Bank(Account):
         self.name = name
         self.address = address
 
+        self.is_bankrupt = False
+        self.is_loan_active = False
+
     def show_profile(self):
         print(f"This is *{self.name}* bank")
         print(f"Total number of user :  {len(Account.account_list)}")
+
+
+class Admin(Bank):
+    admin_list = []
+
+    def __init__(self, name, email, password, acc_type):
+        self.digit_part = None
+        self.admin_id = Admin.set_admin_id()
+
+        self.name = name
+        self.email = email
+        self.__password = password
+        self.acc_type = acc_type
+
+        Admin.admin_list.append(self)
+
+
+
+
+    @classmethod
+    def set_admin_id(cls):
+        digit_part = len(Admin.admin_list) + 101
+        ac_num = 'admin' + '-' + str(digit_part)
+        return ac_num
+    
+    def get_password(self):
+        return self.__password
+
+    def show_admin_profile(self):
+        print(f"This is Admin with id : {self.admin_id}")
+
+    # admin can see user list
 
 
 # --------------------------------------------------------------------------------------
@@ -186,9 +217,18 @@ while (True):
 
     if ch == 1:
         # creating an account
-        acc_type = input('Enter account type (s/c)? : ')
+        acc_type = input('Enter account type [ admin or (s/c)] ? : ')
 
-        if acc_type.lower() == 's':
+        if acc_type.lower() == 'admin':
+            account_type = 'admin'
+            name = input('Enter name : ')
+            email = input('Enter email : ')
+            password = input('Enter password : ')
+            admin_obj = Admin(name, email, password, acc_type)
+            print(f"ADMIN {name} Account Created Successfully. ")
+
+
+        elif acc_type.lower() == 's':
             account_type = 'savings'
             name = input('Enter name : ')
             email = input('Enter email : ')
@@ -209,98 +249,140 @@ while (True):
             Account.create_account(name, email, password, address, account_type)
             print(f"{name}'s ({account_type}) account created successfully ")
 
+
+
     elif ch == 2:
         # Log in
         print('Logging in ...')
-
-        email = input('Enter email : ')
-        password = input('Enter password : ')
-
-        current_user = None
-
-        user_matched = False
-        for user in Account.account_list:
-            if email == user.email and password == user.get_password():
-                user_matched = True
-                current_user = user
-                print(f"\nWelcome {user.name} ({user.acc_type})")
-                break
-
-        if not user_matched:
-            print('No Account has been found')
-
-        if current_user is not None:
-            while True:
-                print()
-                print('1. Deposit Money')
-                print('2. Withdraw Money')
-                print('3. Check Available Balance ')
-                print('4. See Transaction History ')
-                print('5. Take Loan ')
-                print('6. Transfer Money')
-                print('7. Show Current Loan Amount ')
-                print('8. Log Out ')
-                print()
-
-                opt = int(input('Enter option : '))
-                if opt == 1:
-                    # Deposit money
-                    print('Deposit in progress ...')
-                    d_amount = int(input('Enter amount : '))
-                    if d_amount < 0:
-                        print('Amount should be > 0 ')
-                    elif d_amount > 0:
-                        current_user.deposit_amount(d_amount)
-                    # TODO: if user gives alphabets by mistake
+        choice = input('Log in as (admin/user)? : ')
 
 
-                elif opt == 2:
-                    # Withdraw money
-                    print('Withdraw in progress ...')
-                    w_amount = int(input('Enter amount : '))
-                    current_user.withdraw_amount(w_amount)
+        if choice.lower() == 'admin':
+            print(f'Logging in as {choice} ...')
+            email = input('Enter email : ')
+            password = input('Enter password : ')
 
+            # ADMIN parts
+            current_admin = None
+            is_admin_matched = False
+            for admin in Admin.admin_list:
+                if admin.email == email and admin.get_password() == password:
+                    is_admin_matched = True
+                    print('Admin matched')
+                    print(f"WELCOME admin {admin.name} ({admin.admin_id}) ")
+                    current_admin = admin
 
-                elif opt == 3:
-                    # Check available balance
-                    current_user.check_available_balance()
+            if is_admin_matched == False:
+                print("Admin didn't match")
 
+            if current_admin != None:
+                while True:
+                    print()
+                    print('1. Show Admin Profile ')
+                    print('2. Logout')
+                    print()
 
+                    admin_option = int(input('Enter admin option : '))
 
-                elif opt == 4:
-                    # See Transaction history
-                    print(f'--------- History of {current_user.name} ({current_user.acc_number}) ---------')
-                    current_user.get_transaction_history()
-                    print(f"----------------------------------------------")
+                    if admin_option == 1:
+                        current_admin.show_admin_profile()
 
+                    elif admin_option == 2:
+                        print(f"Admin : {current_admin.name} Logged Out Successfully ")
+                        current_admin = None
+                        break
 
-                elif opt == 5:
-                    # Take Loan
-                    print('Loan taking from bank ...')
-                    loan_amount = int(input('Enter loan amount : '))
-                    current_user.take_loan(current_user,loan_amount)
+        elif choice.lower() == 'user':
+            print(f"Logging in as {choice} ...")
+            email = input('Enter email : ')
+            password = input('Enter password : ')
 
-                elif opt == 6:
-                    # Transfer money
-                    print('Money Transfer in progress ...')
-                    print(f"Sender : {current_user.name} ({current_user.acc_number}) ")
-                    sending_money = int(input('Enter amount to send : '))
-                    current_user.transfer_money(sending_money,current_user)
-
-
-                elif opt == 7:
-                    # Showing current loan amount
-                    print(f"Current Loan : {current_user.get_loan_taken()} tk for {current_user.name}")
-
-                elif opt == 8:
-                    # Logout
-                    print(f"{current_user.name} ({current_user.acc_number}) Logged Out Successfully")
-                    current_user = None
+            # USER parts
+            current_user = None
+            user_matched = False
+            for user in Account.account_list:
+                if email == user.email and password == user.get_password():
+                    user_matched = True
+                    current_user = user
+                    print(f"\nWelcome {user.name} ({user.acc_type})")
                     break
 
+            if not user_matched:
+                print('No User Account has been found')
 
-                else:
-                    print(f"Invalid Option ")
+            if current_user is not None:
+                while True:
+                    print()
+                    print('1. Deposit Money')
+                    print('2. Withdraw Money')
+                    print('3. Check Available Balance ')
+                    print('4. See Transaction History ')
+                    print('5. Take Loan ')
+                    print('6. Transfer Money')
+                    print('7. Show Current Loan Amount ')
+                    print('8. Log Out ')
+                    print()
+
+                    opt = int(input('Enter option : '))
+                    if opt == 1:
+                        # Deposit money
+                        print('Deposit in progress ...')
+                        d_amount = int(input('Enter amount : '))
+                        if d_amount < 0:
+                            print('Amount should be > 0 ')
+                        elif d_amount > 0:
+                            current_user.deposit_amount(d_amount)
+                        # TODO: if user gives alphabets by mistake
+
+
+                    elif opt == 2:
+                        # Withdraw money
+                        print('Withdraw in progress ...')
+
+                        w_amount = int(input('Enter amount : '))
+                        current_user.withdraw_amount(w_amount)
+
+
+                    elif opt == 3:
+                        # Check available balance
+                        current_user.check_available_balance()
+
+
+
+                    elif opt == 4:
+                        # See Transaction history
+                        print(f'--------- History of {current_user.name} ({current_user.acc_number}) ---------')
+                        current_user.get_transaction_history()
+                        print(f"----------------------------------------------")
+
+
+                    elif opt == 5:
+                        # Take Loan
+                        print('Loan taking from bank ...')
+                        loan_amount = int(input('Enter loan amount : '))
+                        current_user.take_loan(current_user, loan_amount)
+
+                    elif opt == 6:
+                        # Transfer money
+                        print('Money Transfer in progress ...')
+                        print(f"Sender : {current_user.name} ({current_user.acc_number}) ")
+                        sending_money = int(input('Enter amount to send : '))
+                        current_user.transfer_money(sending_money, current_user)
+
+
+                    elif opt == 7:
+                        # Showing current loan amount
+                        print(f"Current Loan : {current_user.get_loan_taken()} tk of {current_user.name}")
+
+                    elif opt == 8:
+                        # Logout
+                        print(f"{current_user.name} ({current_user.acc_number}) Logged Out Successfully")
+                        current_user = None
+                        break
+
+
+                    else:
+                        print(f"Invalid Option ")
     elif ch == 3:
         for user in Account.account_list:
             user.show_profile()
