@@ -73,17 +73,28 @@ class Account(ABC, User):
             self.__balance += amount
             deposit_history = f"Deposited {amount} tk"
             self.__history.append(deposit_history)
+
+            dutch_bangla.update_revenue(amount)
+            dutch_bangla.update_available_balance(amount,'deposit')
         print(f"{self.name} sir/madam , Deposit {amount} tk successfull")
 
-    def withdraw_amount(self, amount):
+    def withdraw_amount(self, amount, bankruptcy):
         withdraw_history = ""
         if amount > self.__balance:
-            print("Withdrawal amount exceeded")
+            if bankruptcy == True:
+                print(f"Withdrawal amount exceeded? Bank gone Bankrupted.")
+            else:
+                print("Withdrawal amount exceeded")
+
         elif amount <= self.__balance:
-            self.__balance -= amount
-            withdraw_history = f"Withdraw {amount} tk"
-            self.__history.append(withdraw_history)
-            print(f"Withdraw {amount} tk Successfull")
+            if bankruptcy == True:
+                print(f"Bank has gone BANKRUPTCY. You Can not Withdraw your deposited Money.")
+            else:
+                self.__balance -= amount
+                withdraw_history = f"Withdraw {amount} tk"
+                self.__history.append(withdraw_history)
+                print(f"Withdraw {amount} tk Successfull")
+                dutch_bangla.update_available_balance(amount,'withdraw')
 
     def check_available_balance(self):
         print(f"{self.name} ({self.acc_number}) current balance : {self.__balance} tk. ")
@@ -92,21 +103,25 @@ class Account(ABC, User):
         for hist in self.__history:
             print(hist)
 
-    def take_loan(self, user, loan_amount):
+    def take_loan(self, user, loan_amount, loan_active):
         loan_history = ""
         if self.__loan_count < 2:
-            print()
-            print(f"Loan Taken {loan_amount} tk from bank.")
-            loan_history = f"Loan taken {loan_amount} tk "
-            self.__history.append(loan_history)
-            self.__balance += loan_amount
-            self.__loan_taken += loan_amount
-            self.__loan_count += 1
-            print(f"{user.name} ({user.acc_number}) has total loan : {self.__loan_taken} tk")
+            if loan_active == False:
+                print(f"We are not giving loan now.")
+            else:
+                print()
+                print(f"Loan Taken {loan_amount} tk from bank.")
+                loan_history = f"Loan taken {loan_amount} tk "
+                self.__history.append(loan_history)
+                self.__balance += loan_amount
+                self.__loan_taken += loan_amount
+                self.__loan_count += 1
+                print(f"{user.name} ({user.acc_number}) has total loan : {self.__loan_taken} tk")
+                dutch_bangla.update_available_balance(loan_amount,'lone giving')
+                dutch_bangla.update_given_loan(loan_amount)
 
         elif self.__loan_count >= 2:
-            print(f"No More Loan. Repay First")
-            # TODO: Repaying the debt and taking loan again for another two times
+            print(f"No More Loan. You have taken Loan 2 times. ")
 
     def get_loan_taken(self):
         return self.__loan_taken
@@ -160,18 +175,51 @@ class Bank(Account):
         self.name = name
         self.address = address
 
+        self.__revenue = 0
+        self.__available_balance = 0
+        self.__given_loan = 0
+
         self.is_bankrupt = False
-        self.is_loan_active = False
+        self.is_loan_active = True
 
     def show_profile(self):
         print(f"This is *{self.name}* bank")
         print(f"Total number of user :  {len(Account.account_list)}")
 
+    def get_available_balance(self):
+        return self.__available_balance
 
-class Admin(Bank):
+    def get_given_loan(self):
+        return self.__given_loan
+
+    def get_revenue(self):
+        return self.__revenue
+
+
+    def update_revenue(self,amount):
+        self.__revenue += amount
+
+    def update_available_balance(self,amount,operation_type):
+        if operation_type.lower() == 'deposit':
+            self.__available_balance += amount
+        elif operation_type.lower() == 'withdraw':
+            self.__available_balance -= amount
+        elif operation_type.lower() == 'loan giving':
+            self.__available_balance -= amount
+
+    def update_given_loan(self,amount):
+        self.__given_loan += amount
+
+
+
+
+
+class Admin(Bank, Account):
     admin_list = []
 
     def __init__(self, name, email, password, acc_type):
+
+
         self.digit_part = None
         self.admin_id = Admin.set_admin_id()
 
@@ -182,35 +230,65 @@ class Admin(Bank):
 
         Admin.admin_list.append(self)
 
-
-
-
     @classmethod
     def set_admin_id(cls):
         digit_part = len(Admin.admin_list) + 101
         ac_num = 'admin' + '-' + str(digit_part)
         return ac_num
-    
+
     def get_password(self):
         return self.__password
 
     def show_admin_profile(self):
-        print(f"This is Admin with id : {self.admin_id}")
+        print(f"This is Admin {self.name} :: with id : {self.admin_id}")
 
     # admin can see user list
+    def see_all_users(self):
+        if not Account.account_list:
+            print(f"--------------------------------------------------")
+            print(f"\tThere is no Account in the Bank")
+            print(f"--------------------------------------------------")
+        else:
+            print(f"--------------------- Accounts in the Bank --------------------------")
+            for user in Account.account_list:
+                user.show_profile()
+            print('----------------------------------------------------------------------')
+
+    def delete_any_user(self, account_id):
+        user_found = False
+        user_to_delete = None
+        for user in Account.account_list:
+            if user.acc_number == account_id:
+                user_found = True
+                user_to_delete = user
+
+        if user_found == True:
+            Account.account_list.remove(user_to_delete)
+            print(f"Deleted {user_to_delete.name} :: {user_to_delete.acc_number}")
+
+        else:
+            print("\tUser Account not found")
+
+    def check_balance(self):
+        print(f"Balance of the bank {self._Bank__available_balance}")
+
+
 
 
 # --------------------------------------------------------------------------------------
 # main starts
 
 dutch_bangla = Bank("Dutch Bangla BD", 'Motijheel, Dhaka')
+# print(dutch_bangla.__dir__())
 
 while (True):
     print()
     print('1. Create Account ')
     print('2. Log in ')
     print('3. Show Users List ')
-    print('4. Exit ')
+    print('4. Show Revenue (must delete this feature)')
+    print('5. Show Balance (must delete this feature)')
+    print('6. Exit ')
     print()
 
     ch = int(input('Enter your choice : '))
@@ -221,6 +299,7 @@ while (True):
 
         if acc_type.lower() == 'admin':
             account_type = 'admin'
+            print(f"Creating an Account as {acc_type} ...")
             name = input('Enter name : ')
             email = input('Enter email : ')
             password = input('Enter password : ')
@@ -230,6 +309,7 @@ while (True):
 
         elif acc_type.lower() == 's':
             account_type = 'savings'
+            print(f"Creating an Account as User ... ")
             name = input('Enter name : ')
             email = input('Enter email : ')
             password = input('Enter password : ')
@@ -241,6 +321,7 @@ while (True):
 
         elif acc_type.lower() == 'c':
             account_type = 'current'
+            print(f"Creating an Account as User ... ")
             name = input('Enter name : ')
             email = input('Enter email : ')
             password = input('Enter password : ')
@@ -255,7 +336,6 @@ while (True):
         # Log in
         print('Logging in ...')
         choice = input('Log in as (admin/user)? : ')
-
 
         if choice.lower() == 'admin':
             print(f'Logging in as {choice} ...')
@@ -279,7 +359,13 @@ while (True):
                 while True:
                     print()
                     print('1. Show Admin Profile ')
-                    print('2. Logout')
+                    print('2. See All Users ')
+                    print('3. Delete any User ')
+                    print('4. Check the total balance of the bank ')
+                    print('5. Check the total Loan amount given ')
+                    print('6. Loan Feature Change ')
+                    print('7. Declare Bankruptcy')
+                    print('8. Logout')
                     print()
 
                     admin_option = int(input('Enter admin option : '))
@@ -288,9 +374,41 @@ while (True):
                         current_admin.show_admin_profile()
 
                     elif admin_option == 2:
+                        # See all users
+                        current_admin.see_all_users()
+
+                    elif admin_option == 3:
+                        # Delete any User
+                        print(f"Deleting an user account in progress ...")
+                        account_id = input('Enter Account ID : ')
+                        current_admin.delete_any_user(account_id)
+
+
+                    elif admin_option == 4:
+                        # Check Balance of the bank
+                        current_admin.check_balance()
+
+                    elif admin_option == 5:
+                        # Check Loan amount of the bank
+                        print(f"Bank's given Loan : {current_admin.get_given_loan()}")
+
+                    elif admin_option == 6:
+                        dutch_bangla.is_loan_active = False
+                        print(f"ADMIN has just turned off the loan feature of the bank. ")
+
+
+                    elif admin_option == 7:
+                        dutch_bangla.is_bankrupt = True
+                        print(f"ADMIN has just declared Bankruptcy. ")
+
+
+                    elif admin_option == 8:
                         print(f"Admin : {current_admin.name} Logged Out Successfully ")
                         current_admin = None
                         break
+
+                    else:
+                        print('Invalid Admin Option')
 
         elif choice.lower() == 'user':
             print(f"Logging in as {choice} ...")
@@ -337,10 +455,12 @@ while (True):
 
                     elif opt == 2:
                         # Withdraw money
+                        print(f"Bankrupt kina : {dutch_bangla.is_bankrupt}")
+                        bankruptcy = dutch_bangla.is_bankrupt
                         print('Withdraw in progress ...')
 
                         w_amount = int(input('Enter amount : '))
-                        current_user.withdraw_amount(w_amount)
+                        current_user.withdraw_amount(w_amount, bankruptcy)
 
 
                     elif opt == 3:
@@ -358,9 +478,11 @@ while (True):
 
                     elif opt == 5:
                         # Take Loan
+                        print(f"Loan Active kina : {dutch_bangla.is_loan_active}")
+                        loan_active = dutch_bangla.is_loan_active
                         print('Loan taking from bank ...')
                         loan_amount = int(input('Enter loan amount : '))
-                        current_user.take_loan(current_user, loan_amount)
+                        current_user.take_loan(current_user, loan_amount, loan_active)
 
                     elif opt == 6:
                         # Transfer money
@@ -384,10 +506,22 @@ while (True):
                     else:
                         print(f"Invalid Option ")
     elif ch == 3:
-        for user in Account.account_list:
-            user.show_profile()
-
+        if not Account.account_list:
+            print(f"--------------------------------------------------")
+            print(f"\tThere is no Account in the Bank")
+            print(f"--------------------------------------------------")
+        else:
+            print(f"-------------------- Showing Accounts in the Bank --------------------")
+            for user in Account.account_list:
+                user.show_profile()
+            print('--------------------------------------------------------------------')
     elif ch == 4:
+        print(dutch_bangla.get_revenue())
+
+    elif ch == 5:
+        print(dutch_bangla.get_available_balance())
+
+    elif ch == 6:
         break
 
     else:
