@@ -82,7 +82,7 @@ class Account(ABC, User):
         withdraw_history = ""
         if amount > self.__balance:
             if bankruptcy == True:
-                print(f"Withdrawal amount exceeded? Bank gone Bankrupted.")
+                print(f"Withdrawal amount exceeded and Bank gone Bankrupted.")
             else:
                 print("Withdrawal amount exceeded")
 
