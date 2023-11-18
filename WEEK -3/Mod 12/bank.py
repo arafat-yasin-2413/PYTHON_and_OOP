@@ -32,8 +32,8 @@ class Account(ABC, User):
         self.__loan_count = 0
         self.__loan_taken = 0  # in taka
 
-        self.sent_money = 0
-        self.received_money = 0
+        self.__sent_money = 0
+        self.__received_money = 0
 
         if acc_type.lower() == 'savings':
             self.digit = 1001 + len(Account.account_list)
@@ -42,6 +42,12 @@ class Account(ABC, User):
         elif acc_type.lower() == 'current':
             self.digit = 1001 + len(Account.account_list)
             self.acc_number = 'c' + str(self.digit)
+
+    def get_sent_money(self):
+        return self.__sent_money
+
+    def get_received_money(self):
+        return self.__received_money
 
     def get_balance(self):
         return self.__balance
@@ -75,7 +81,7 @@ class Account(ABC, User):
             self.__history.append(deposit_history)
 
             dutch_bangla.update_revenue(amount)
-            dutch_bangla.update_available_balance(amount,'deposit')
+            dutch_bangla.update_available_balance(amount, 'deposit')
         print(f"{self.name} sir/madam , Deposit {amount} tk successfull")
 
     def withdraw_amount(self, amount, bankruptcy):
@@ -94,11 +100,12 @@ class Account(ABC, User):
                 withdraw_history = f"Withdraw {amount} tk"
                 self.__history.append(withdraw_history)
                 print(f"Withdraw {amount} tk Successfull")
-                dutch_bangla.update_available_balance(amount,'withdraw')
+                dutch_bangla.update_available_balance(amount, 'withdraw')
 
     def check_available_balance(self):
+        print('-----------------------------------------------------------------')
         print(f"{self.name} ({self.acc_number}) current balance : {self.__balance} tk. ")
-
+        print('-----------------------------------------------------------------')
     def get_transaction_history(self):
         for hist in self.__history:
             print(hist)
@@ -117,7 +124,7 @@ class Account(ABC, User):
                 self.__loan_taken += loan_amount
                 self.__loan_count += 1
                 print(f"{user.name} ({user.acc_number}) has total loan : {self.__loan_taken} tk")
-                dutch_bangla.update_available_balance(loan_amount,'lone giving')
+                dutch_bangla.update_available_balance(loan_amount, 'loan giving')
                 dutch_bangla.update_given_loan(loan_amount)
 
         elif self.__loan_count >= 2:
@@ -138,8 +145,9 @@ class Account(ABC, User):
                 if user.acc_number == receiver_acc_num:
                     is_receiver_found = True
                     print(f"Receiver ({user.name}) has been found successfully")
-                    user.received_money += sending_amount
-                    sender.sent_money += sending_amount
+                    user.__received_money += sending_amount
+                    user.__balance += sending_amount
+                    sender.__sent_money += sending_amount
                     sender.__balance -= sending_amount
                     sender_transferring_money = f"Transferred {sending_amount} tk to {user.name} "
                     receiver_receiving_money = f"Received {sending_amount} tk from {sender.name} "
@@ -148,9 +156,10 @@ class Account(ABC, User):
                     print(f"Money Transfer Successfull, {sending_amount} tk to {user.name} ")
 
             if not is_receiver_found:
-                print("Account does not exist")
+
+                print("\tAccount does not exist")
         else:
-            print(f"You have not sufficient money in your account")
+            print(f"\tYou have not sufficient money in your account")
 
 
 # ------------------- DONE ----------------- DONE ------------------- DONE ----------------- DONE -----------------
@@ -195,11 +204,10 @@ class Bank(Account):
     def get_revenue(self):
         return self.__revenue
 
-
-    def update_revenue(self,amount):
+    def update_revenue(self, amount):
         self.__revenue += amount
 
-    def update_available_balance(self,amount,operation_type):
+    def update_available_balance(self, amount, operation_type):
         if operation_type.lower() == 'deposit':
             self.__available_balance += amount
         elif operation_type.lower() == 'withdraw':
@@ -207,10 +215,8 @@ class Bank(Account):
         elif operation_type.lower() == 'loan giving':
             self.__available_balance -= amount
 
-    def update_given_loan(self,amount):
+    def update_given_loan(self, amount):
         self.__given_loan += amount
-
-    
 
 
 class Admin(Bank, Account):
@@ -219,7 +225,6 @@ class Admin(Bank, Account):
     def __init__(self, name, email, password, acc_type):
         # super(Bank, self).__init__()
         # super(Account, self).__init__()
-
 
         self.digit_part = None
         self.admin_id = Admin.set_admin_id()
@@ -274,8 +279,6 @@ class Admin(Bank, Account):
         self.get_available_balance()
 
 
-
-
 # --------------------------------------------------------------------------------------
 # main starts
 
@@ -286,10 +289,7 @@ while (True):
     print()
     print('1. Create Account ')
     print('2. Log in ')
-    print('3. Show Users List ')
-    print('4. Show Revenue (must delete this feature)')
-    print('5. Show Balance (must delete this feature)')
-    print('6. Exit ')
+    print('3. Exit ')
     print()
 
     ch = int(input('Enter your choice : '))
@@ -387,11 +387,13 @@ while (True):
 
                     elif admin_option == 4:
                         # Check Balance of the bank
-                        pass
+                        print(f"Total Balance of the Bank : {dutch_bangla.get_available_balance()} tk ")
+
+
 
                     elif admin_option == 5:
                         # Check Loan amount of the bank
-                        pass
+                        print(f"Total Loan Given : {dutch_bangla.get_given_loan()} tk ")
 
                     elif admin_option == 6:
                         dutch_bangla.is_loan_active = False
@@ -479,14 +481,18 @@ while (True):
 
                     elif opt == 5:
                         # Take Loan
-                        print(f"Loan Active kina : {dutch_bangla.is_loan_active}")
+                        # print(f"Loan Active kina : {dutch_bangla.is_loan_active}")
                         loan_active = dutch_bangla.is_loan_active
-                        print('Loan taking from bank ...')
+                        print('Taking Loan from bank ...')
                         loan_amount = int(input('Enter loan amount : '))
                         current_user.take_loan(current_user, loan_amount, loan_active)
 
                     elif opt == 6:
                         # Transfer money
+
+                        '''
+                            Receiver's account no. needs to be remembered 
+                        '''
                         print('Money Transfer in progress ...')
                         print(f"Sender : {current_user.name} ({current_user.acc_number}) ")
                         sending_money = int(input('Enter amount to send : '))
@@ -506,23 +512,8 @@ while (True):
 
                     else:
                         print(f"Invalid Option ")
+
     elif ch == 3:
-        if not Account.account_list:
-            print(f"--------------------------------------------------")
-            print(f"\tThere is no Account in the Bank")
-            print(f"--------------------------------------------------")
-        else:
-            print(f"-------------------- Showing Accounts in the Bank --------------------")
-            for user in Account.account_list:
-                user.show_profile()
-            print('--------------------------------------------------------------------')
-    elif ch == 4:
-        print(dutch_bangla.get_revenue())
-
-    elif ch == 5:
-        print(dutch_bangla.get_available_balance())
-
-    elif ch == 6:
         break
 
     else:
